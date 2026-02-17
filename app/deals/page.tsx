@@ -39,7 +39,7 @@ export default function TodaysDealsPage() {
   const [inStockOnly, setInStockOnly] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<string>('discount-high');
 
-  // Simple currency formatter - returns string only
+  // Simple currency formatter - returns string ONLY
   const formatPrice = (price: number): string => {
     return `৳${price.toFixed(2)}`;
   };
@@ -127,7 +127,6 @@ export default function TodaysDealsPage() {
     setSortBy('discount-high');
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-red-50 py-8">
@@ -139,7 +138,6 @@ export default function TodaysDealsPage() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-red-50 py-8">
@@ -172,14 +170,24 @@ export default function TodaysDealsPage() {
           <div className="bg-white rounded-xl shadow-sm p-6 max-w-md mx-auto">
             <div className="text-sm font-semibold text-gray-600 mb-3">Deals end in:</div>
             <div className="flex justify-center space-x-4">
-              {['hours', 'minutes', 'seconds'].map((unit) => (
-                <div key={unit} className="text-center">
-                  <div className="bg-red-100 text-red-800 rounded-lg py-2 px-3 text-2xl font-bold">
-                    {timeLeft[unit as keyof typeof timeLeft].toString().padStart(2, '0')}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1 capitalize">{unit}</div>
+              <div className="text-center">
+                <div className="bg-red-100 text-red-800 rounded-lg py-2 px-3 text-2xl font-bold">
+                  {timeLeft.hours.toString().padStart(2, '0')}
                 </div>
-              ))}
+                <div className="text-xs text-gray-500 mt-1">Hours</div>
+              </div>
+              <div className="text-center">
+                <div className="bg-red-100 text-red-800 rounded-lg py-2 px-3 text-2xl font-bold">
+                  {timeLeft.minutes.toString().padStart(2, '0')}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">Minutes</div>
+              </div>
+              <div className="text-center">
+                <div className="bg-red-100 text-red-800 rounded-lg py-2 px-3 text-2xl font-bold">
+                  {timeLeft.seconds.toString().padStart(2, '0')}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">Seconds</div>
+              </div>
             </div>
           </div>
         </div>
@@ -216,8 +224,9 @@ export default function TodaysDealsPage() {
                         <input
                           type="radio"
                           name="category"
+                          value={cat}
                           checked={selectedCategory === cat}
-                          onChange={() => setSelectedCategory(cat)}
+                          onChange={(e) => setSelectedCategory(e.target.value)}
                           className="text-red-600"
                         />
                         <span className="ml-2 text-sm capitalize">
@@ -326,19 +335,27 @@ export default function TodaysDealsPage() {
 
                       {/* Image */}
                       <div className="h-52 bg-gray-100 flex justify-center overflow-hidden">
-                        {product.images?.[0] ? (
+                        {product.images && product.images.length > 0 ? (
                           <Image
                             src={product.images[0]}
                             alt={product.name}
                             width={300}
                             height={300}
                             className="w-auto h-full object-cover"
+                            priority={false}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
+                          </div>
+                        )}
+                        
+                        {/* Out of Stock Badge */}
+                        {!product.inStock && (
+                          <div className="absolute top-3 right-3 bg-gray-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-full shadow-sm">
+                            Out of Stock
                           </div>
                         )}
                       </div>
