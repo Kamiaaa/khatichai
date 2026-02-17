@@ -39,8 +39,13 @@ export default function TodaysDealsPage() {
   const [inStockOnly, setInStockOnly] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<string>('discount-high');
 
-  // Format currency function
+  // Format currency function - returns string instead of JSX
   const formatCurrency = (amount: number) => {
+    return `৳${amount.toFixed(2)}`;
+  };
+
+  // Format currency with styling for display
+  const formatCurrencyStyled = (amount: number) => {
     return (
       <span className="flex items-baseline">
         <span className="text-2xl font-extrabold mr-0.5">৳</span>
@@ -55,7 +60,6 @@ export default function TodaysDealsPage() {
     return Math.round((1 - price / originalPrice) * 100);
   };
 
-  // Countdown timer for deals
   // Countdown timer for deals - optimized version
   useEffect(() => {
     const updateCountdown = () => {
@@ -477,7 +481,8 @@ export default function TodaysDealsPage() {
                         {/* Price Section */}
                         <div className="mb-4">
                           <div className="flex items-center">
-                            <span className="text-2xl font-bold text-gray-900">{formatCurrency(product.price)}</span>
+                            {/* Use formatCurrencyStyled for styled display */}
+                            <span className="text-2xl font-bold text-gray-900">{formatCurrencyStyled(product.price)}</span>
                             {product.originalPrice && (
                               <span className="ml-3 text-lg text-gray-500 line-through">
                                 {formatCurrency(product.originalPrice)}
