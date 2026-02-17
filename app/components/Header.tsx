@@ -148,7 +148,7 @@ const Header = () => {
     setIsAccountMenuOpen(false);
   };
 
-  const quickSearches = ["Smartphones", "Laptops", "Headphones", "Cameras", "Smart Watches"];
+  const quickSearches = ["Milk", "Honey", "Deshi Chicken", "Mustard Oil"];
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-100">
