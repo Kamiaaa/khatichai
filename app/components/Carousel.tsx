@@ -84,30 +84,12 @@ const Carousel = () => {
           <div key={index} className="flex-shrink-0 w-full snap-center relative">
             <Image
               src={slide.src}
-              alt={slide.title}
+              alt={`Slide ${index + 1}`}
               width={1600}
               height={600}
               className="w-full h-[400px] md:h-[500px] object-cover"
               priority={index === 0}
             />
-
-            {/* Text Overlay with left gap */}
-            <div className="absolute inset-0 flex items-center">
-              <div className="pl-6 md:pl-24 lg:pl-32 max-w-lg text-white">
-                <h2 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
-                  {slide.title}
-                </h2>
-                <p className="text-lg md:text-xl mb-6 drop-shadow-md">
-                  {slide.subtitle}
-                </p>
-                <a
-                  href={slide.buttonLink}
-                  className="inline-block bg-white text-black px-5 py-2 rounded-full shadow hover:bg-gray-200 transition"
-                >
-                  {slide.buttonText}
-                </a>
-              </div>
-            </div>
           </div>
         ))}
       </div>
