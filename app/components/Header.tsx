@@ -209,7 +209,7 @@ const Header = () => {
                         className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors border-b border-gray-100 last:border-b-0 text-sm"
                       >
                         <FiTag className="mr-3 text-gray-400" size={16} />
-                        <span className="font-medium">{cat.name}</span>
+                        <span className="font-medium bg-amber-400">{cat.name}</span>
                       </button>
                     ))}
                   </div>
