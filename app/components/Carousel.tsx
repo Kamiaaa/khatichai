@@ -19,21 +19,21 @@ const Carousel = () => {
   // Homepage slides
   const slides: Slide[] = [
     {
-      src: "/img/banner1.jpg",
+      src: "/img/slide-01.jpg",
       title: "New Arrivals",
       subtitle: "Discover the latest trends in our collection",
       buttonText: "Shop Now",
       buttonLink: "/new-arrivals",
     },
     {
-      src: "/img/banner2.jpg",
+      src: "/img/slide-02.jpg",
       title: "Exclusive Offers",
       subtitle: "Up to 50% off on selected items",
       buttonText: "Grab Offer",
       buttonLink: "/offers",
     },
     {
-      src: "/img/banner3.jpg",
+      src: "/img/slide-03.jpg",
       title: "Best Sellers",
       subtitle: "Our most popular products loved by customers",
       buttonText: "View Collection",
