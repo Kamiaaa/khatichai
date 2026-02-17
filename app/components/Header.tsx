@@ -641,7 +641,7 @@ const Header = () => {
               </div>
             </li>
 
-            <li key="deals">
+            {/* <li key="deals">
               <button
                 onClick={() => handleNavigation("/deals")}
                 className="flex items-center w-full text-left py-2 px-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors text-sm"
@@ -649,7 +649,7 @@ const Header = () => {
                 <FiTag className="mr-3" size={16} />
                 Today's Deals
               </button>
-            </li>
+            </li> */}
 
             {/* Hide Wishlist for admin users in mobile menu */}
             {session?.user?.role !== "admin" && (
