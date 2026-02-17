@@ -112,7 +112,7 @@ export default function Footer() {
                 <div className="bg-green-800 p-2 rounded-full mr-3 border border-green-700">
                   <IoMdMail className="text-amber-400" />
                 </div>
-                <span className="text-green-200">hello@khati-khai.com</span>
+                <span className="text-green-200">hello@khati-chai.com</span>
               </li>
               <li className="flex items-center">
                 <div className="bg-green-800 p-2 rounded-full mr-3 border border-green-700">
@@ -139,7 +139,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-green-400 text-sm mb-4 md:mb-0 flex items-center">
               <FaLeaf className="mr-2" /> 
-              © {currentYear} Khati Khai Organic. All rights reserved. | Naturally Yours
+              © {currentYear} Khati chai Organic. All rights reserved. | Naturally Yours
             </p>
             
             {/* Certifications */}
