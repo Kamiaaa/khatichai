@@ -484,20 +484,20 @@ const Header = () => {
             All Products
           </button>
           
-          <button
+          {/* <button
             onClick={() => handleNavigation("/deals")}
             className="text-red-600 hover:text-red-700 font-medium transition-colors flex items-center space-x-1 text-sm"
           >
             <FiTag size={14} />
             <span>Today's Deals</span>
-          </button>
+          </button> */}
           
-          <button
+          {/* <button
             onClick={() => handleNavigation("/new-arrivals")}
             className="text-gray-700 hover:text-green-800 font-medium transition-colors text-sm"
           >
             New Arrivals
-          </button>
+          </button> */}
           
           <button
             onClick={() => handleNavigation("/support")}
