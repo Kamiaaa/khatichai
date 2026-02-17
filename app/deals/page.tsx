@@ -39,19 +39,9 @@ export default function TodaysDealsPage() {
   const [inStockOnly, setInStockOnly] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<string>('discount-high');
 
-  // Format currency function - returns string instead of JSX
-  const formatCurrency = (amount: number) => {
+  // Format currency as string for text content
+  const formatCurrencyString = (amount: number) => {
     return `৳${amount.toFixed(2)}`;
-  };
-
-  // Format currency with styling for display
-  const formatCurrencyStyled = (amount: number) => {
-    return (
-      <span className="flex items-baseline">
-        <span className="text-2xl font-extrabold mr-0.5">৳</span>
-        <span>{amount.toFixed(2)}</span>
-      </span>
-    );
   };
 
   // Calculate discount percentage
@@ -60,7 +50,7 @@ export default function TodaysDealsPage() {
     return Math.round((1 - price / originalPrice) * 100);
   };
 
-  // Countdown timer for deals - optimized version
+  // Countdown timer for deals
   useEffect(() => {
     const updateCountdown = () => {
       const now = new Date();
@@ -81,12 +71,8 @@ export default function TodaysDealsPage() {
       setTimeLeft({ hours, minutes, seconds });
     };
 
-    // Update immediately
     updateCountdown();
-
-    // Update every second
     const timer = setInterval(updateCountdown, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
@@ -125,22 +111,18 @@ export default function TodaysDealsPage() {
     .filter(product => {
       const discount = calculateDiscount(product.price, product.originalPrice);
 
-      // Category filter
       if (selectedCategory !== 'all' && product.category !== selectedCategory) {
         return false;
       }
 
-      // Discount range filter
       if (discount < discountRange[0] || discount > discountRange[1]) {
         return false;
       }
 
-      // Rating filter
       if (product.rating < minRating) {
         return false;
       }
 
-      // Stock filter
       if (inStockOnly && !product.inStock) {
         return false;
       }
@@ -339,10 +321,11 @@ export default function TodaysDealsPage() {
                       <button
                         key={rating}
                         onClick={() => setMinRating(rating)}
-                        className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-200 ${minRating === rating
-                          ? 'bg-red-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
+                        className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-200 ${
+                          minRating === rating
+                            ? 'bg-red-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
                       >
                         {rating === 0 ? '★' : rating}
                       </button>
@@ -416,7 +399,7 @@ export default function TodaysDealsPage() {
                   const discount = calculateDiscount(product.price, product.originalPrice);
 
                   return (
-                    <div key={product._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 group border-2 border-transparent hover:border-red-200">
+                    <div key={product._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 group border-2 border-transparent hover:border-red-200 relative">
                       {/* Discount Badge */}
                       <div className="absolute top-3 left-3 z-10">
                         <span className="bg-red-600 text-white text-sm font-bold px-3 py-2 rounded-full shadow-lg">
@@ -478,20 +461,24 @@ export default function TodaysDealsPage() {
 
                         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
 
-                        {/* Price Section */}
+                        {/* Price Section - Fixed */}
                         <div className="mb-4">
                           <div className="flex items-center">
-                            {/* Use formatCurrencyStyled for styled display */}
-                            <span className="text-2xl font-bold text-gray-900">{formatCurrencyStyled(product.price)}</span>
+                            <span className="text-2xl font-bold text-gray-900 flex items-baseline">
+                              <span className="text-2xl font-extrabold mr-0.5">৳</span>
+                              <span>{product.price.toFixed(2)}</span>
+                            </span>
                             {product.originalPrice && (
                               <span className="ml-3 text-lg text-gray-500 line-through">
-                                {formatCurrency(product.originalPrice)}
+                                ৳{product.originalPrice.toFixed(2)}
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-green-600 font-medium mt-1">
-                            You save {formatCurrency(product.originalPrice! - product.price)}
-                          </div>
+                          {product.originalPrice && (
+                            <div className="text-sm text-green-600 font-medium mt-1">
+                              You save ৳{(product.originalPrice - product.price).toFixed(2)}
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
