@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -12,11 +12,12 @@ import {
   Loader2,
   ShoppingBag,
   Tag,
-  Zap,
   Check,
   TrendingUp,
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  WifiOff,
+  AlertCircle
 } from 'lucide-react';
 
 interface Product {
@@ -39,11 +40,20 @@ interface Product {
   updatedAt: string;
 }
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isOffline, setIsOffline] = useState(false);
+  
+  // Refs for cleanup
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Filters
   const [selectedCategory, setSelectedCategory] = useState('All Products');
@@ -56,6 +66,29 @@ export default function ProductsPage() {
   const [visibleProductsCount, setVisibleProductsCount] = useState(6);
   const productsPerPage = 6;
 
+  // Check online status
+  useEffect(() => {
+    setIsOffline(!navigator.onLine);
+    
+    const handleOnline = () => {
+      setIsOffline(false);
+      // Auto-retry when coming back online
+      if (error) {
+        handleRetry();
+      }
+    };
+    
+    const handleOffline = () => setIsOffline(true);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [error]);
+
   const formatCurrency = (amount: number) => (
     <span className="flex items-baseline">
       <span className="text-xl font-bold mr-1">৳</span>
@@ -63,30 +96,106 @@ export default function ProductsPage() {
     </span>
   );
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  const fetchProducts = useCallback(async (isRetry = false) => {
+    // Cancel previous request if any
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
 
-  const fetchProducts = async () => {
+    // Create new abort controller
+    abortControllerRef.current = new AbortController();
+
     try {
-      setLoading(true);
-      const res = await fetch('/api/products');
-      if (!res.ok) throw new Error('Failed to fetch products');
+      if (!isRetry) {
+        setLoading(true);
+      }
+      setError(null);
+
+      // Add timeout to fetch
+      const timeoutId = setTimeout(() => {
+        abortControllerRef.current?.abort();
+      }, 10000); // 10 second timeout
+
+      const res = await fetch('/api/products', {
+        signal: abortControllerRef.current.signal,
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch products: ${res.status} ${res.statusText}`);
+      }
 
       const data: Product[] = await res.json();
+      
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid data format received');
+      }
+
       setProducts(data);
+      setRetryCount(0); // Reset retry count on success
 
       if (data.length) {
         const max = Math.max(...data.map(p => p.price));
         const calculatedMax = Math.max(1000, Math.ceil(max / 100) * 100);
         setPriceRange([0, calculatedMax]);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+
+    } catch (err: any) {
+      // Don't set error if it's an aborted request
+      if (err.name === 'AbortError') {
+        console.log('Request timed out');
+        setError('Request timed out. Please try again.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Something went wrong');
+      }
+
+      // Implement retry logic
+      if (retryCount < MAX_RETRIES && !isOffline) {
+        if (retryTimeoutRef.current) {
+          clearTimeout(retryTimeoutRef.current);
+        }
+        
+        retryTimeoutRef.current = setTimeout(() => {
+          setRetryCount(prev => prev + 1);
+          fetchProducts(true);
+        }, RETRY_DELAY * Math.pow(2, retryCount)); // Exponential backoff
+      }
     } finally {
-      setLoading(false);
+      if (!isRetry || retryCount >= MAX_RETRIES) {
+        setLoading(false);
+      }
     }
-  };
+  }, [retryCount, isOffline]);
+
+  // Wrapper functions for onClick handlers
+  const handleRetry = useCallback(() => {
+    setRetryCount(0);
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const handleRefresh = useCallback(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchProducts();
+
+    // Cleanup function
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+    };
+  }, [fetchProducts]);
 
   const loadMoreProducts = () => {
     setLoadingMore(true);
@@ -164,35 +273,82 @@ export default function ProductsPage() {
     setVisibleProductsCount(productsPerPage);
   };
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <Loader2 className="w-12 h-12 animate-spin text-emerald-600 mx-auto mb-4" />
-        <p className="text-gray-600">Loading products...</p>
-      </div>
-    </div>
-  );
+  // Enhanced error display
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center">
+          <div className="mb-6">
+            {isOffline ? (
+              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
+                <WifiOff className="w-10 h-10 text-orange-600" />
+              </div>
+            ) : (
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                <AlertCircle className="w-10 h-10 text-red-600" />
+              </div>
+            )}
+          </div>
+          
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">
+            {isOffline ? 'You\'re Offline' : 'Unable to Load Products'}
+          </h3>
+          
+          <p className="text-gray-600 mb-6">
+            {isOffline 
+              ? 'Please check your internet connection and try again.' 
+              : error}
+          </p>
 
-  if (error) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <X className="w-8 h-8 text-red-600" />
+          <div className="space-y-3">
+            <button
+              onClick={handleRetry}
+              disabled={isOffline}
+              className="w-full px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Try Again
+            </button>
+
+            {retryCount > 0 && retryCount < MAX_RETRIES && (
+              <p className="text-sm text-gray-500">
+                Retrying... Attempt {retryCount} of {MAX_RETRIES}
+              </p>
+            )}
+
+            {!isOffline && retryCount >= MAX_RETRIES && (
+              <div className="text-sm text-orange-600 bg-orange-50 p-3 rounded-lg">
+                <p>Unable to connect after multiple attempts.</p>
+                <p className="text-xs mt-1">Please check if the server is running and refresh the page.</p>
+              </div>
+            )}
+          </div>
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Products</h3>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <button
-          onClick={fetchProducts}
-          className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
-        >
-          Try Again
-        </button>
       </div>
-    </div>
-  );
+    );
+  }
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-emerald-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading products...</p>
+          {retryCount > 0 && (
+            <p className="text-sm text-gray-400 mt-2">
+              Retrying... ({retryCount}/{MAX_RETRIES})
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Rest of your component remains the same...
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8">
+      {/* Your existing JSX */}
       <div className="container mx-auto px-4 lg:px-6">
         {/* Header */}
         <div className="mb-8">
@@ -454,7 +610,7 @@ export default function ProductsPage() {
                   </button>
                   {products.length === 0 && (
                     <button
-                      onClick={fetchProducts}
+                      onClick={handleRefresh}
                       className="px-6 py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition"
                     >
                       Refresh Products
