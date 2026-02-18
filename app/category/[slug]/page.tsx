@@ -70,7 +70,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 group border border-gray-100 flex flex-col"
           >
             {/* Updated image container for full view */}
-            <div className="relative w-full aspect-square overflow-hidden bg-gray-100">
+            <div className="relative w-full aspect-square overflow-hidden">
               {product.images && product.images.length > 0 ? (
                 <Image
                   src={product.images[0]}
