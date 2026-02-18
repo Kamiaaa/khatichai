@@ -624,20 +624,26 @@ export default function ProductsPage() {
                   {visibleProducts.map((product) => (
                     <div
                       key={product._id}
-                      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col"
                     >
-                      {/* Product Image */}
-                      <div className="relative h-64 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                        <Image
-                          src={product.images[0]}
-                          alt={product.name}
-                          width={400}
-                          height={400}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                        />
+                      {/* Product Image - Updated for full view */}
+                      <div className="relative w-full aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                        {product.images && product.images.length > 0 ? (
+                          <Image
+                            src={product.images[0]}
+                            alt={product.name}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            className="object-contain group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <ShoppingBag className="w-12 h-12 text-gray-400" />
+                          </div>
+                        )}
 
                         {/* Badges */}
-                        <div className="absolute top-3 left-3 flex flex-col gap-2">
+                        <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
                           {product.originalPrice && product.originalPrice > product.price && (
                             <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
                               Save ৳{(product.originalPrice - product.price).toFixed(0)}
@@ -650,7 +656,7 @@ export default function ProductsPage() {
                           )}
                         </div>
 
-                        <div className="absolute top-3 right-3">
+                        <div className="absolute top-3 right-3 z-10">
                           <span className="bg-white/90 backdrop-blur-sm text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
                             <Sparkles className="w-3 h-3" />
                             {product.category?.name || 'Uncategorized'}
@@ -659,12 +665,12 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Product Info */}
-                      <div className="p-5">
+                      <div className="p-5 flex-1 flex flex-col">
                         <h3 className="font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-emerald-600 transition">
                           {product.name}
                         </h3>
 
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-4">
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-1">
                           {product.description}
                         </p>
 
@@ -684,7 +690,7 @@ export default function ProductsPage() {
                         </div>
 
                         {/* Price and CTA */}
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
                           <div>
                             <div className="text-2xl font-bold text-gray-900">
                               {formatCurrency(product.price)}
@@ -706,7 +712,6 @@ export default function ProductsPage() {
                             <ChevronRight className="w-4 h-4" />
                           </Link>
                         </div>
-
                       </div>
                     </div>
                   ))}
