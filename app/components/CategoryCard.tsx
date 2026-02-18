@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface Category {
   _id: string;
@@ -100,7 +101,7 @@ const CategoryCard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="animate-pulse bg-white rounded-2xl overflow-hidden shadow-lg">
-              <div className="bg-gray-200 h-64"></div>
+              <div className="bg-gray-200 aspect-square"></div>
               <div className="p-6">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-gray-100 rounded w-1/2"></div>
@@ -173,47 +174,61 @@ const CategoryCard = () => {
             <div
               key={cat._id}
               onClick={() => handleCategoryClick(cat.slug)}
-              className="group relative bg-white cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden shadow-lg hover:shadow-xl border border-gray-100"
+              className="group relative bg-white cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden shadow-lg hover:shadow-xl border border-gray-100 rounded-2xl"
             >
-              {/* Image Container - Full View */}
-              <div className={`relative h-52 w-full ${!hasImage ? bgColor : 'bg-gray-50'} flex items-center justify-center overflow-hidden`}>
+              {/* Image Container - Full View with Aspect Ratio */}
+              <div className="relative w-full aspect-square overflow-hidden">
                 {hasImage ? (
                   <>
-                    <img
-                      src={cat.displayImage || cat.image}
-                      alt={cat.name}
-                      className="w-auto h-52 object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        // If image fails to load, show fallback
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                    
-                    {/* Category Name Overlay on Image */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-end p-6 bg-linear-to-t from-black/70 via-transparent to-transparent">
+                    {/* Main Image */}
+                    <div className="absolute inset-0">
+                      <Image
+                        src={cat.displayImage || cat.image || ''}
+                        alt={cat.name}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          // If image fails to load, hide it and show fallback
+                          const target = e.target as HTMLElement;
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.style.display = 'none';
+                            const fallback = parent.nextElementSibling;
+                            if (fallback) {
+                              (fallback as HTMLElement).style.display = 'flex';
+                            }
+                          }
+                        }}
+                      />
+                    </div>
+
+                    {/* Fallback that shows when image fails */}
+                    <div 
+                      className={`absolute inset-0 hidden flex-col items-center justify-center ${bgColor}`}
+                      style={{ display: 'none' }}
+                    >
+                      <span className="text-5xl mb-3">{icon}</span>
+                      <h3 className="text-xl font-bold text-gray-800 mb-1">{cat.name}</h3>
+                      <p className="text-gray-600">{cat.productCount} products</p>
+                    </div>
+
+                    {/* Category Name Overlay - Always visible with gradient */}
+                    <div className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-end p-6 bg-gradient-to-t from-black/70 via-black/40 to-transparent">
                       <div className="text-center">
                         <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
                           {cat.name}
                         </h3>
-                        {/* <p className="text-white/90 text-sm font-medium">
+                        <p className="text-white/90 text-sm font-medium">
                           {cat.productCount} {cat.productCount === 1 ? 'product' : 'products'}
-                        </p> */}
-                      </div>
-                    </div>
-
-                    {/* Fallback that shows when image fails */}
-                    <div className="absolute inset-0 hidden flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                      <div className="text-5xl mb-3">{icon}</div>
-                      <div className="text-center">
-                        <h3 className="text-xl font-bold text-gray-800 mb-1">{cat.name}</h3>
-                        <p className="text-gray-600">{cat.productCount} products</p>
+                        </p>
                       </div>
                     </div>
                   </>
                 ) : (
                   /* Fallback View for No Image */
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-                    <div className="text-6xl mb-4">{icon}</div>
+                  <div className={`absolute inset-0 flex flex-col items-center justify-center p-6 ${bgColor}`}>
+                    <span className="text-6xl mb-4">{icon}</span>
                     <div className="text-center">
                       <h3 className="text-2xl font-bold text-gray-800 mb-2">{cat.name}</h3>
                       <p className="text-gray-600 text-lg">{cat.productCount} products</p>
@@ -222,10 +237,8 @@ const CategoryCard = () => {
                 )}
                 
                 {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
               </div>
-
-              {/* No separate content div needed - everything is on the image */}
             </div>
           );
         })}
