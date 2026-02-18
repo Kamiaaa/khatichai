@@ -406,7 +406,7 @@ export default function ProductDetailPage() {
               </svg>
             </li>
             <li>
-              <span className="text-emerald-600 font-medium">{product.name}</span>
+              <span className="text-emerald-600 font-playfair font-medium">{product.name}</span>
             </li>
           </ol>
         </nav>
