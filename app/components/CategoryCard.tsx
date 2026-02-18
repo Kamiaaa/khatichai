@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface Category {
   _id: string;
@@ -56,14 +57,14 @@ const CategoryCard = () => {
   // Fallback colors for categories without images
   const getCategoryColor = (index: number) => {
     const colors = [
-      'bg-gradient-to-br from-blue-50 to-blue-100',
-      'bg-gradient-to-br from-green-50 to-green-100',
-      'bg-gradient-to-br from-purple-50 to-purple-100',
-      'bg-gradient-to-br from-red-50 to-red-100',
-      'bg-gradient-to-br from-yellow-50 to-yellow-100',
-      'bg-gradient-to-br from-pink-50 to-pink-100',
-      'bg-gradient-to-br from-indigo-50 to-indigo-100',
-      'bg-gradient-to-br from-teal-50 to-teal-100',
+      'from-blue-50 to-blue-100',
+      'from-green-50 to-green-100',
+      'from-purple-50 to-purple-100',
+      'from-red-50 to-red-100',
+      'from-yellow-50 to-yellow-100',
+      'from-pink-50 to-pink-100',
+      'from-indigo-50 to-indigo-100',
+      'from-teal-50 to-teal-100',
     ];
     return colors[index % colors.length];
   };
@@ -173,36 +174,39 @@ const CategoryCard = () => {
             <div
               key={cat._id}
               onClick={() => handleCategoryClick(cat.slug)}
-              className="group relative bg-white cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden shadow-lg hover:shadow-xl border border-gray-100"
+              className="group relative cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden shadow-lg hover:shadow-xl"
             >
-              {/* Image Container - Full View */}
-              <div className={`relative h-52 w-full ${!hasImage ? bgColor : 'bg-gray-50'} flex items-center justify-center overflow-hidden`}>
+              {/* Image Container - Clean with no background */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-white">
                 {hasImage ? (
                   <>
+                    {/* Regular img tag for now - can switch to Next.js Image if needed */}
                     <img
                       src={cat.displayImage || cat.image}
                       alt={cat.name}
-                      className="w-auto h-52 object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         // If image fails to load, show fallback
-                        e.currentTarget.style.display = 'none';
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        // Show the fallback div
+                        const parent = target.parentElement;
+                        if (parent) {
+                          const fallback = parent.querySelector('.fallback-content');
+                          if (fallback) {
+                            (fallback as HTMLElement).style.display = 'flex';
+                          }
+                        }
                       }}
                     />
                     
-                    {/* Category Name Overlay on Image */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-end p-6 bg-linear-to-t from-black/70 via-transparent to-transparent">
-                      <div className="text-center">
-                        <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
-                          {cat.name}
-                        </h3>
-                        {/* <p className="text-white/90 text-sm font-medium">
-                          {cat.productCount} {cat.productCount === 1 ? 'product' : 'products'}
-                        </p> */}
-                      </div>
-                    </div>
-
                     {/* Fallback that shows when image fails */}
-                    <div className="absolute inset-0 hidden flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                    <div 
+                      className="fallback-content absolute inset-0 hidden flex-col items-center justify-center"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${bgColor.split(' ')[0].replace('from-', '')} 0%, ${bgColor.split(' ')[1].replace('to-', '')} 100%)`
+                      }}
+                    >
                       <div className="text-5xl mb-3">{icon}</div>
                       <div className="text-center">
                         <h3 className="text-xl font-bold text-gray-800 mb-1">{cat.name}</h3>
@@ -211,8 +215,13 @@ const CategoryCard = () => {
                     </div>
                   </>
                 ) : (
-                  /* Fallback View for No Image */
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+                  /* Fallback View for No Image - Clean gradient only */
+                  <div 
+                    className="absolute inset-0 flex flex-col items-center justify-center p-6"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${bgColor.split(' ')[0].replace('from-', '')} 0%, ${bgColor.split(' ')[1].replace('to-', '')} 100%)`
+                    }}
+                  >
                     <div className="text-6xl mb-4">{icon}</div>
                     <div className="text-center">
                       <h3 className="text-2xl font-bold text-gray-800 mb-2">{cat.name}</h3>
@@ -220,12 +229,21 @@ const CategoryCard = () => {
                     </div>
                   </div>
                 )}
-                
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
 
-              {/* No separate content div needed - everything is on the image */}
+                {/* Category Name Overlay - Always visible on images */}
+                {hasImage && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-end p-6 bg-gradient-to-t from-black/70 via-transparent to-transparent">
+                    <div className="text-center">
+                      <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                        {cat.name}
+                      </h3>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Subtle hover overlay - removed background color, just a light overlay */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+              </div>
             </div>
           );
         })}
