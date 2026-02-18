@@ -190,7 +190,7 @@ const CategoryCard = () => {
                     />
                     
                     {/* Category Name Overlay on Image */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-end p-6 bg-white via-transparent to-transparent">
+                    <div className="absolute inset-0 flex flex-col items-center justify-end p-6 bg-linear-to-t from-black/70 via-transparent to-transparent">
                       <div className="text-center">
                         <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
                           {cat.name}
