@@ -1,1 +1,16 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Tailwind */
 @import "tailwindcss";
+
+/* Optional: Define font utility classes */
+.font-playfair {
+  font-family: "Playfair Display", serif;
+  font-optical-sizing: auto;
+}
+
+.font-raleway {
+  font-family: "Raleway", sans-serif;
+  font-optical-sizing: auto;
+}
