@@ -101,7 +101,7 @@ const CategoryCard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="animate-pulse bg-white rounded-2xl overflow-hidden shadow-lg">
-              <div className="bg-gray-200 aspect-square"></div>
+              <div className="bg-gray-200 h-64"></div>
               <div className="p-6">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-gray-100 rounded w-1/2"></div>
@@ -176,25 +176,25 @@ const CategoryCard = () => {
               onClick={() => handleCategoryClick(cat.slug)}
               className="group relative bg-white cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden shadow-lg hover:shadow-xl border border-gray-100 rounded-2xl"
             >
-              {/* Image Container - Full View with Aspect Ratio */}
-              <div className="relative w-full aspect-square overflow-hidden">
+              {/* Image Container - Original height with full view */}
+              <div className="relative h-64 w-full overflow-hidden bg-gray-50">
                 {hasImage ? (
                   <>
                     {/* Main Image */}
-                    <div className="absolute inset-0">
+                    <div className="absolute inset-0 flex items-center justify-center">
                       <Image
                         src={cat.displayImage || cat.image || ''}
                         alt={cat.name}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                        width={400}
+                        height={400}
+                        className="w-auto h-64 object-contain group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           // If image fails to load, hide it and show fallback
                           const target = e.target as HTMLElement;
-                          const parent = target.parentElement;
+                          const parent = target.parentElement?.parentElement;
                           if (parent) {
-                            parent.style.display = 'none';
-                            const fallback = parent.nextElementSibling;
+                            target.style.display = 'none';
+                            const fallback = parent.querySelector('.fallback-content');
                             if (fallback) {
                               (fallback as HTMLElement).style.display = 'flex';
                             }
@@ -205,8 +205,7 @@ const CategoryCard = () => {
 
                     {/* Fallback that shows when image fails */}
                     <div 
-                      className={`absolute inset-0 hidden flex-col items-center justify-center ${bgColor}`}
-                      style={{ display: 'none' }}
+                      className={`fallback-content absolute inset-0 hidden flex-col items-center justify-center ${bgColor}`}
                     >
                       <span className="text-5xl mb-3">{icon}</span>
                       <h3 className="text-xl font-bold text-gray-800 mb-1">{cat.name}</h3>
