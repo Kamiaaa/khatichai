@@ -4,13 +4,7 @@
 /* Tailwind */
 @import "tailwindcss";
 
-/* Optional: Define font utility classes */
-.font-playfair {
-  font-family: "Playfair Display", serif;
-  font-optical-sizing: auto;
-}
-
-.font-raleway {
-  font-family: "Raleway", sans-serif;
-  font-optical-sizing: auto;
+@theme {
+  --font-playfair: "Playfair Display", serif;
+  --font-raleway: "Raleway", sans-serif;
 }
