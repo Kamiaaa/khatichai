@@ -406,7 +406,7 @@ export default function ProductDetailPage() {
               </svg>
             </li>
             <li>
-              <span className="text-emerald-600 font-playfair font-medium">{product.name}</span>
+              <span className="text-emerald-600 font-medium">{product.name}</span>
             </li>
           </ol>
         </nav>
@@ -421,7 +421,7 @@ export default function ProductDetailPage() {
             {/* Product Details */}
             <div className="space-y-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+                <h1 className="text-3xl font-playfair font-bold text-gray-900 mb-2">{product.name}</h1>
                 
                 <div className="flex items-center mb-4">
                   <div className="flex items-center">
