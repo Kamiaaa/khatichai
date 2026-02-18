@@ -176,7 +176,7 @@ const CategoryCard = () => {
               className="group relative bg-white cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden shadow-lg hover:shadow-xl border border-gray-100"
             >
               {/* Image Container - Full View */}
-              <div className={`relative h-52 w-full ${!hasImage ? bgColor : 'bg-gray-50'} flex items-center justify-center overflow-hidden`}>
+              <div className={`relative h-52 w-full ${!hasImage ? bgColor : 'bg-white'} flex items-center justify-center overflow-hidden`}>
                 {hasImage ? (
                   <>
                     <img
