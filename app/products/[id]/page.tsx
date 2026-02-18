@@ -560,7 +560,7 @@ export default function ProductDetailPage() {
                       <button
                         onClick={handleAddToCart}
                         disabled={addingToCart}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition-colors duration-200 flex items-center justify-center disabled:opacity-75 disabled:cursor-not-allowed"
+                        className="bg-green-800 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition-colors duration-200 flex items-center justify-center disabled:opacity-75 disabled:cursor-not-allowed"
                       >
                         {addingToCart ? (
                           <>
@@ -581,7 +581,7 @@ export default function ProductDetailPage() {
                       </button>
                       <button
                         onClick={handleBuyNow}
-                        className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition-colors duration-200 flex items-center justify-center"
+                        className="bg-emerald-700 hover:bg-green-800 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition-colors duration-200 flex items-center justify-center"
                       >
                         <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -612,7 +612,7 @@ export default function ProductDetailPage() {
             <h2 className="text-2xl font-bold text-gray-900">You might also like</h2>
             <Link 
               href="/products" 
-              className="text-emerald-600 hover:text-emerald-800 font-medium"
+              className="text-green-800 hover:text-emerald-800 font-medium"
             >
               View all products →
             </Link>
