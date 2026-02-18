@@ -87,7 +87,7 @@ const Carousel = () => {
               alt={`Slide ${index + 1}`}
               width={1600}
               height={600}
-              className="w-full h-[400px] md:h-[500px] object-cover"
+              className="w-full h-[150px] md:h-[350px] object-cover"
               priority={index === 0}
             />
           </div>
