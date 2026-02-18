@@ -81,7 +81,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                   priority={false}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center">
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-12 w-12 text-gray-400"
